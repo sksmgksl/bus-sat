@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>버스 추천 결과</title>
+</head>
+<body>
+    <h1>추천 버스</h1>
+    <table border="1">
+        <tr>
+            <th>학과 종료 시간</th>
+            <th>추천 버스 ID</th>
+            <th>출발 시간</th>
+            <th>순천역 도착 시간</th>
+        </tr>
+        <tr>
+            <td th:text="${endTime}">학과 종료 시간</td>
+            <td th:text="${busId}">버스 ID</td>
+            <td th:text="${departureTime}">출발 시간</td>
+            <td th:text="${arrivalTime}">도착 시간</td>
+        </tr>
+    </table>
+
+    <p th:text="${message}">결과가 없을 경우</p>
+
+    <a href="/">다시 입력하기</a>
+</body>
+</html>

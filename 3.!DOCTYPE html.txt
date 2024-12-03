@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>학과 종료 시간 기반 버스 추천</title>
+</head>
+<body>
+    <h1>학과 종료 시간 기반 버스 추천</h1>
+    <form action="/recommend" method="get">
+        <label for="endTime">학과 종료 시간 (HH:mm): </label>
+        <input type="time" id="endTime" name="endTime" required>
+        <button type="submit">추천 보기</button>
+    </form>
+</body>
+</html>

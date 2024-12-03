@@ -1,0 +1,32 @@
+package com.example.busrecommendation.controller;
+
+public class Bus {
+
+    private int id;
+    private String startTime;
+    private long interval;
+    private String lastTime;
+
+    public Bus(int id, String startTime, long interval, String lastTime) {
+        this.id = id;
+        this.startTime = startTime;
+        this.interval = interval;
+        this.lastTime = lastTime;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getStartTime() {
+        return startTime;
+    }
+
+    public long getInterval() {
+        return interval;
+    }
+
+    public String getLastTime() {
+        return lastTime;
+    }
+}

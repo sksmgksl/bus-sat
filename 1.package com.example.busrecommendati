@@ -1,0 +1,81 @@
+package com.example.busrecommendation.controller;
+
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+
+@Controller
+public class BusController {
+
+    // 버스 데이터 (id, 출발 시간, 간격, 마지막 시간)
+    private static final Bus[] busData = {
+            new Bus(1, "08:45", 110, "21:30"),
+            new Bus(14, "09:22", 28, "22:20"),
+            new Bus(15, "08:15", 135, "20:40"),
+            new Bus(16, "09:15", 255, "17:30"),
+            new Bus(52, "09:52", 13, "20:30")
+    };
+
+    // 페이지 첫 진입 시
+    @GetMapping("/")
+    public String index() {
+        return "index";
+    }
+
+    // 사용자가 학과 종료 시간을 입력하면 버스 추천
+    @RequestMapping("/recommend")
+    public String recommend(@RequestParam("endTime") @DateTimeFormat(pattern = "HH:mm") LocalTime endTime, Model model) {
+        Bus bestBus = findBestBus(endTime);
+        if (bestBus != null) {
+            // 순천대에서 순천역까지 17분 소요
+            LocalTime arrivalTime = bestBus.getDepartureTime().plusMinutes(17);
+            model.addAttribute("busId", bestBus.getId());
+            model.addAttribute("departureTime", bestBus.getDepartureTime().toString());
+            model.addAttribute("arrivalTime", arrivalTime.toString());
+        } else {
+            model.addAttribute("message", "추천 가능한 버스가 없습니다.");
+        }
+        return "result";
+    }
+
+    // 버스를 추천하는 메서드
+    private Bus findBestBus(LocalTime endTime) {
+        Bus bestBus = null;
+        long minWaitTime = Long.MAX_VALUE;
+        for (Bus bus : busData) {
+            LocalTime nextBusTime = getNextBusTime(bus, endTime);
+            if (nextBusTime != null) {
+                long waitTime = endTime.until(nextBusTime, java.time.temporal.ChronoUnit.MINUTES);
+                if (waitTime < minWaitTime) {
+                    minWaitTime = waitTime;
+                    bestBus = bus;
+                }
+            }
+        }
+        return bestBus;
+    }
+
+    // 버스의 다음 출발 시간을 계산하는 메서드
+    private LocalTime getNextBusTime(Bus bus, LocalTime endTime) {
+        LocalTime startTime = LocalTime.parse(bus.getStartTime(), DateTimeFormatter.ofPattern("HH:mm"));
+        LocalTime lastTime = LocalTime.parse(bus.getLastTime(), DateTimeFormatter.ofPattern("HH:mm"));
+        long intervalMinutes = bus.getInterval();
+        
+        if (endTime.isBefore(startTime)) {
+            return startTime;
+        } else {
+            long elapsed = (endTime.toSecondOfDay() - startTime.toSecondOfDay()) / (intervalMinutes * 60);
+            LocalTime nextBusTime = startTime.plusMinutes((elapsed + 1) * intervalMinutes);
+            if (nextBusTime.isBefore(lastTime) || nextBusTime.equals(lastTime)) {
+                return nextBusTime;
+            }
+        }
+        return null;
+    }
+}
